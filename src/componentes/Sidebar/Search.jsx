@@ -14,20 +14,20 @@ import {
   Tooltip,
   useDisclosure,
 } from '@chakra-ui/react';
-// import { SearchLogo } from '../../assets/constants';
+import { SearchLogo } from '../../assets/constants';
 // import useSearchUser from '../../hooks/useSearchUser';
 // import { useRef } from 'react';
-// import SuggestedUser from '../SuggestedUsers/SuggestedUser';
+import SuggestedUser from '../SuggestedUsers/SuggestedUser';
 
 const Search = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const searchRef = useRef(null);
-  const { user, isLoading, getUserProfile, setUser } = useSearchUser();
+  // const searchRef = useRef(null);
+  // const { user, isLoading, getUserProfile, setUser } = useSearchUser();
 
-  const handleSearchUser = (e) => {
-    e.preventDefault();
-    getUserProfile(searchRef.current.value);
-  };
+  // const handleSearchUser = (e) => {
+  //   e.preventDefault();
+  //   getUserProfile(searchRef.current.value);
+  // };
 
   return (
     <>
@@ -60,25 +60,19 @@ const Search = () => {
           <ModalHeader>Search user</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <form onSubmit={handleSearchUser}>
+            <form>
               <FormControl>
                 <FormLabel>Username</FormLabel>
-                <Input placeholder="asaprogrammer" ref={searchRef} />
+                <Input placeholder="asaprogrammer" />
               </FormControl>
 
               <Flex w={'full'} justifyContent={'flex-end'}>
-                <Button
-                  type="submit"
-                  ml={'auto'}
-                  size={'sm'}
-                  my={4}
-                  isLoading={isLoading}
-                >
+                <Button type="submit" ml={'auto'} size={'sm'} my={4}>
                   Search
                 </Button>
               </Flex>
             </form>
-            {user && <SuggestedUser user={user} setUser={setUser} />}
+            <SuggestedUser />
           </ModalBody>
         </ModalContent>
       </Modal>

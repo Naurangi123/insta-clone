@@ -13,7 +13,7 @@ import {
   CommentLogo,
   NotificationsLogo,
   UnlikeLogo,
-} from '../../assets/contants';
+} from '../../assets/constants';
 
 const PostFooter = ({ username, isProfilePage }) => {
   const [liked, setLiked] = useState(false);

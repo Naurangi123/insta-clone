@@ -1,11 +1,13 @@
 import { Avatar, Text, Flex, Link, Button } from '@chakra-ui/react';
-
 import useLogout from '../../hooks/useLogOut';
 import useAuthStore from '../../store/authStore';
 
 const SuggestedHeader = () => {
   const { handlelogout, isloggingOut } = useLogout();
   const authUser = useAuthStore((state) => state.user);
+
+  if (!authUser) return null;
+
   return (
     <Flex justifyContent={'space-between'} alignItems={'center'} w={'full'}>
       <Flex alignItems={'center'} gap={2}>

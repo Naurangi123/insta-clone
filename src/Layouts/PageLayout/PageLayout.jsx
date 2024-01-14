@@ -3,9 +3,10 @@ import Sidebar from '../../componentes/Sidebar/Sidebar';
 import { useLocation } from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../firebase/firebase';
-import Navbar from '../../components/Navbar/Navbar';
+import Navbar from '../../componentes/Navbar/Navbar';
 
-// instead of adding the Sidebar component to every page, we can add it only once to the PageLayout component and wrap the children with it. This way, we can have a sidebar on every page except the AuthPage.
+// instead of adding the Sidebar component to every page, we can add it only once to the PageLayout component and wrap the children with it.
+// This way, we can have a sidebar on every page except the AuthPage.
 
 const PageLayout = ({ children }) => {
   const { pathname } = useLocation();
@@ -17,7 +18,7 @@ const PageLayout = ({ children }) => {
   if (checkingUserIsAuth) return <PageLayoutSpinner />;
 
   return (
-    <Flex flexDir={canRenderNavbar ? 'column' : 'row'}>
+    <Flex flexDirection={canRenderNavbar ? 'column' : 'row'}>
       {/* sidebar on the left */}
       {canRenderSidebar ? (
         <Box w={{ base: '70px', md: '240px' }}>
