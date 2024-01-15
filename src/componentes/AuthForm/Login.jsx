@@ -1,4 +1,4 @@
-import { Input, Button, Alert, AlertIcon } from '@chakra-ui/react';
+import { Alert, AlertIcon, Button, Input } from '@chakra-ui/react';
 import { useState } from 'react';
 import useLogin from '../../hooks/useLogin';
 
@@ -7,7 +7,7 @@ const Login = () => {
     email: '',
     password: '',
   });
-  const [loading, error, login] = useLogin();
+  const { loading, error, login } = useLogin();
   return (
     <>
       <Input
@@ -18,12 +18,11 @@ const Login = () => {
         value={inputs.email}
         onChange={(e) => setInputs({ ...inputs, email: e.target.value })}
       />
-
       <Input
         placeholder="Password"
         fontSize={14}
-        type="password"
         size={'sm'}
+        type="password"
         value={inputs.password}
         onChange={(e) => setInputs({ ...inputs, password: e.target.value })}
       />
