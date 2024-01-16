@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import useShowToast from './useShowToast';
-import { collection, doc, getDocs, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
+// import useUserProfileStore from '../store/userProfileStore';
 import useUserProfileStore from '../store/useProfileStore';
 
 const useGetUserProfileByUsername = (username) => {
@@ -17,22 +18,28 @@ const useGetUserProfileByUsername = (username) => {
           collection(firestore, 'users'),
           where('username', '==', username)
         );
-        const querySnapShot = await getDocs(q);
+        const querySnapshot = await getDocs(q);
 
-        if (querySnapShot.empty) return setUserProfile(null);
+        if (querySnapshot.empty) return setUserProfile(null);
+
         let userDoc;
-        querySnapShot.forEach((doc) => {
+        querySnapshot.forEach((doc) => {
           userDoc = doc.data();
         });
+
         setUserProfile(userDoc);
+        console.log(userDoc);
       } catch (error) {
-        showToast('error', error.message, 'error');
+        showToast('Error', error.message, 'error');
       } finally {
         setIsLoading(false);
       }
     };
+
     getUserProfile();
   }, [setUserProfile, username, showToast]);
+
   return { isLoading, userProfile };
 };
+
 export default useGetUserProfileByUsername;

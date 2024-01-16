@@ -15,19 +15,19 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { SearchLogo } from '../../assets/constants';
-// import useSearchUser from '../../hooks/useSearchUser';
-// import { useRef } from 'react';
+import useSearchUser from '../../hooks/useSearchUser';
+import { useRef } from 'react';
 import SuggestedUser from '../SuggestedUsers/SuggestedUser';
 
 const Search = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // const searchRef = useRef(null);
-  // const { user, isLoading, getUserProfile, setUser } = useSearchUser();
+  const searchRef = useRef(null);
+  const { user, isLoading, getUserProfile, setUser } = useSearchUser();
 
-  // const handleSearchUser = (e) => {
-  //   e.preventDefault();
-  //   getUserProfile(searchRef.current.value);
-  // };
+  const handleSearchUser = (e) => {
+    e.preventDefault();
+    getUserProfile(searchRef.current.value);
+  };
 
   return (
     <>
