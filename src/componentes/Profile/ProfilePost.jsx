@@ -1,38 +1,77 @@
 import {
+  Avatar,
+  Button,
+  Divider,
   Flex,
   GridItem,
   Image,
   Modal,
-  ModalOverlay,
-  ModalContent,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
   Text,
-  useDisclosure,
-  Box,
-  Avatar,
-  Divider,
   VStack,
+  useDisclosure,
 } from '@chakra-ui/react';
-import Comment from '../Comment/Comment';
 import { AiFillHeart } from 'react-icons/ai';
 import { FaComment } from 'react-icons/fa';
 import { MdDelete } from 'react-icons/md';
+import Comment from '../Comment/Comment';
 import PostFooter from '../FeedPosts/PostFooter';
+import useUserProfileStore from '../../store/userProfileStore';
+import useAuthStore from '../../store/authStore';
+import useShowToast from '../../hooks/useShowToast';
+import { useState } from 'react';
+import { deleteObject, ref } from 'firebase/storage';
+import { firestore, storage } from '../../firebase/firebase';
+import { arrayRemove, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import usePostStore from '../../store/postStore';
+import Caption from '../Comment/Caption';
 
-const ProfilePost = ({ img }) => {
+const ProfilePost = ({ post }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const userProfile = useUserProfileStore((state) => state.userProfile);
+  const authUser = useAuthStore((state) => state.user);
+  const showToast = useShowToast();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const deletePost = usePostStore((state) => state.deletePost);
+  const decrementPostsCount = useUserProfileStore((state) => state.deletePost);
+
+  const handleDeletePost = async () => {
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    if (isDeleting) return;
+
+    try {
+      const imageRef = ref(storage, `posts/${post.id}`);
+      await deleteObject(imageRef);
+      const userRef = doc(firestore, 'users', authUser.uid);
+      await deleteDoc(doc(firestore, 'posts', post.id));
+
+      await updateDoc(userRef, {
+        posts: arrayRemove(post.id),
+      });
+
+      deletePost(post.id);
+      decrementPostsCount(post.id);
+      showToast('Success', 'Post deleted successfully', 'success');
+    } catch (error) {
+      showToast('Error', error.message, 'error');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <>
       <GridItem
         cursor={'pointer'}
-        borderRadius={'4'}
+        borderRadius={4}
         overflow={'hidden'}
         border={'1px solid'}
-        borderColor={'whiteAplha.500'}
+        borderColor={'whiteAlpha.300'}
         position={'relative'}
         aspectRatio={1 / 1}
-        _hover={{ opacity: 1 }}
         onClick={onOpen}
       >
         <Flex
@@ -43,7 +82,7 @@ const ProfilePost = ({ img }) => {
           left={0}
           right={0}
           bottom={0}
-          bg={'blackAlpha.500'}
+          bg={'blackAlpha.700'}
           transition={'all 0.3s ease'}
           zIndex={1}
           justifyContent={'center'}
@@ -51,21 +90,23 @@ const ProfilePost = ({ img }) => {
           <Flex alignItems={'center'} justifyContent={'center'} gap={50}>
             <Flex>
               <AiFillHeart size={20} />
-              <Text fontweight={'bold'} ml={2}>
-                7
+              <Text fontWeight={'bold'} ml={2}>
+                {post.likes.length}
               </Text>
             </Flex>
+
             <Flex>
               <FaComment size={20} />
               <Text fontWeight={'bold'} ml={2}>
-                7
+                {post.comments.length}
               </Text>
             </Flex>
           </Flex>
         </Flex>
+
         <Image
-          src={img}
-          alt="prfile post"
+          src={post.imageURL}
+          alt="profile post"
           w={'100%'}
           h={'100%'}
           objectFit={'cover'}
@@ -83,19 +124,23 @@ const ProfilePost = ({ img }) => {
           <ModalCloseButton />
           <ModalBody bg={'black'} pb={5}>
             <Flex
-              gap={4}
+              gap="4"
               w={{ base: '90%', sm: '70%', md: 'full' }}
               mx={'auto'}
+              maxH={'90vh'}
+              minH={'50vh'}
             >
-              <Box
+              <Flex
                 borderRadius={4}
                 overflow={'hidden'}
                 border={'1px solid'}
                 borderColor={'whiteAlpha.300'}
                 flex={1.5}
+                justifyContent={'center'}
+                alignItems={'center'}
               >
-                <Image src={img} alt="profile post" />
-              </Box>
+                <Image src={post.imageURL} alt="profile post" />
+              </Flex>
               <Flex
                 flex={1}
                 flexDir={'column'}
@@ -105,87 +150,47 @@ const ProfilePost = ({ img }) => {
                 <Flex alignItems={'center'} justifyContent={'space-between'}>
                   <Flex alignItems={'center'} gap={4}>
                     <Avatar
-                      src="/profilepic.png"
+                      src={userProfile.profilePicURL}
                       size={'sm'}
                       name="As a Programmer"
                     />
                     <Text fontWeight={'bold'} fontSize={12}>
-                      asaprogrammer
+                      {userProfile.username}
                     </Text>
                   </Flex>
-                  <Box
-                    _hover={{ bg: 'whiteAlpha.300', color: 'red.600' }}
-                    borderRadius={4}
-                    p={1}
-                  >
-                    <MdDelete size={20} cursor={'pointer'} />
-                  </Box>
+
+                  {authUser?.uid === userProfile.uid && (
+                    <Button
+                      size={'sm'}
+                      bg={'transparent'}
+                      _hover={{ bg: 'whiteAlpha.300', color: 'red.600' }}
+                      borderRadius={4}
+                      p={1}
+                      onClick={handleDeletePost}
+                      isLoading={isDeleting}
+                    >
+                      <MdDelete size={20} cursor="pointer" />
+                    </Button>
+                  )}
                 </Flex>
                 <Divider my={4} bg={'gray.500'} />
+
                 <VStack
-                  w={'full'}
+                  w="full"
                   alignItems={'start'}
                   maxH={'350px'}
-                  overflow={'auto'}
+                  overflowY={'auto'}
                 >
-                  <Comment
-                    createdAt={'1d ago'}
-                    username={'asaprogrammer'}
-                    prifilePic={'profilepic.png'}
-                    text={'Nice pic'}
-                  />
-                  <Comment
-                    createdAt={'2d ago'}
-                    username={'asaprogrammer'}
-                    prifilePic={'img1.png'}
-                    text={'Good looking pic'}
-                  />
-                  <Comment
-                    createdAt={'12h ago'}
-                    username={'asaprogrammer'}
-                    prifilePic={'img3.png'}
-                    text={'Nice look'}
-                  />
-                  <Comment
-                    createdAt={'12h ago'}
-                    username={'asaprogrammer'}
-                    prifilePic={'img3.png'}
-                    text={'Nice look'}
-                  />
-                  <Comment
-                    createdAt={'12h ago'}
-                    username={'asaprogrammer'}
-                    prifilePic={'img3.png'}
-                    text={'Nice look'}
-                  />
-                  <Comment
-                    createdAt={'12h ago'}
-                    username={'asaprogrammer'}
-                    prifilePic={'img3.png'}
-                    text={'Nice look'}
-                  />
-                  <Comment
-                    createdAt={'12h ago'}
-                    username={'asaprogrammer'}
-                    prifilePic={'img3.png'}
-                    text={'Nice look'}
-                  />
-                  <Comment
-                    createdAt={'12h ago'}
-                    username={'asaprogrammer'}
-                    prifilePic={'img3.png'}
-                    text={'Nice look'}
-                  />
-                  <Comment
-                    createdAt={'12h ago'}
-                    username={'asaprogrammer'}
-                    prifilePic={'img3.png'}
-                    text={'Nice look'}
-                  />
+                  {/* CAPTION */}
+                  {post.caption && <Caption post={post} />}
+                  {/* COMMENTS */}
+                  {post.comments.map((comment) => (
+                    <Comment key={comment.id} comment={comment} />
+                  ))}
                 </VStack>
-                <Divider my={4} bg={'gray.500'} />
+                <Divider my={4} bg={'gray.8000'} />
 
-                <PostFooter isProfilePage={true} />
+                <PostFooter isProfilePage={true} post={post} />
               </Flex>
             </Flex>
           </ModalBody>

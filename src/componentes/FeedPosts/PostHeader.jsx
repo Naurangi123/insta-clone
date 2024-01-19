@@ -22,7 +22,7 @@ const PostHeader = ({ username, avatar }) => {
           _hover={{ color: 'white' }}
           transition={'0.2s ease-in-out'}
         >
-          Unfollow
+          Follow
         </Text>
       </Box>
     </Flex>

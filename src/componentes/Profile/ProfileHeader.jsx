@@ -7,7 +7,7 @@ import {
   VStack,
   useDisclosure,
 } from '@chakra-ui/react';
-import useUserProfileStore from '../../store/useProfileStore';
+import useUserProfileStore from '../../store/userProfileStore';
 import EditProfile from './EditProfile';
 
 import useAuthStore from '../../store/authStore';

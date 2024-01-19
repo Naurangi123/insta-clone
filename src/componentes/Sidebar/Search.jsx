@@ -60,19 +60,25 @@ const Search = () => {
           <ModalHeader>Search user</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <form>
+            <form onSubmit={handleSearchUser}>
               <FormControl>
                 <FormLabel>Username</FormLabel>
-                <Input placeholder="asaprogrammer" />
+                <Input placeholder="asaprogrammer" ref={searchRef} />
               </FormControl>
 
               <Flex w={'full'} justifyContent={'flex-end'}>
-                <Button type="submit" ml={'auto'} size={'sm'} my={4}>
+                <Button
+                  type="submit"
+                  ml={'auto'}
+                  size={'sm'}
+                  my={4}
+                  isLoading={isLoading}
+                >
                   Search
                 </Button>
               </Flex>
             </form>
-            <SuggestedUser />
+            {user && <SuggestedUser user={user} setUser={setUser} />}
           </ModalBody>
         </ModalContent>
       </Modal>
