@@ -4,7 +4,12 @@ import PostHeader from './PostHeader';
 import useGetUserProfileById from '../../hooks/useGetUserProfileById';
 
 const FeedPost = ({ post }) => {
-  const { userProfile } = useGetUserProfileById(post.createdBy);
+  // const { userProfile } = useGetUserProfileById(post.createdBy);
+  const { userProfile } = useGetUserProfileById(post.createdBy || '');
+  if (!post.createdBy) {
+    console.error(`Missing createdBy field in post with ID: ${post.id}`);
+    return null; // Skip rendering for this post
+  }
   return (
     <>
       <PostHeader post={post} creatorProfile={userProfile} />
