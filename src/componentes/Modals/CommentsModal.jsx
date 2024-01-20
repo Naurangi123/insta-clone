@@ -1,123 +1,78 @@
 import {
-  Box,
   Button,
   Flex,
   Input,
-  InputGroup,
-  InputRightElement,
-  Text,
-  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
 } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
-import {
-  CommentLogo,
-  NotificationsLogo,
-  UnlikeLogo,
-} from '../../assets/constants';
+import Comment from '../Comment/Comment';
 import usePostComment from '../../hooks/usePostComment';
-import useAuthStore from '../../store/authStore';
-import useLikePost from '../../hooks/useLikePost';
-import { timeAgo } from '../../utils/timeAgo';
-import CommentsModal from '../Modals/CommentsModal';
+import { useEffect, useRef } from 'react';
 
-const PostFooter = ({ post, isProfilePage, creatorProfile }) => {
-  const { isCommenting, handlePostComment } = usePostComment();
-  const [comment, setComment] = useState('');
-  const authUser = useAuthStore((state) => state.user);
+const CommentsModal = ({ isOpen, onClose, post }) => {
+  const { handlePostComment, isCommenting } = usePostComment();
   const commentRef = useRef(null);
-  const { handleLikePost, isLiked, likes } = useLikePost(post);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const handleSubmitComment = async () => {
-    await handlePostComment(post.id, comment);
-    setComment('');
+  const commentsContainerRef = useRef(null);
+  const handleSubmitComment = async (e) => {
+    // do not refresh the page, prevent it
+    e.preventDefault();
+    await handlePostComment(post.id, commentRef.current.value);
+    commentRef.current.value = '';
   };
 
+  useEffect(() => {
+    const scrollToBottom = () => {
+      commentsContainerRef.current.scrollTop =
+        commentsContainerRef.current.scrollHeight;
+    };
+    if (isOpen) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
+  }, [isOpen, post.comments.length]);
+
   return (
-    <Box mb={10} marginTop={'auto'}>
-      <Flex alignItems={'center'} gap={4} w={'full'} pt={0} mb={2} mt={4}>
-        <Box onClick={handleLikePost} cursor={'pointer'} fontSize={18}>
-          {!isLiked ? <NotificationsLogo /> : <UnlikeLogo />}
-        </Box>
-
-        <Box
-          cursor={'pointer'}
-          fontSize={18}
-          onClick={() => commentRef.current.focus()}
-        >
-          <CommentLogo />
-        </Box>
-      </Flex>
-      <Text fontWeight={600} fontSize={'sm'}>
-        {likes} likes
-      </Text>
-
-      {isProfilePage && (
-        <Text fontSize="12" color={'gray'}>
-          Posted {timeAgo(post.createdAt)}
-        </Text>
-      )}
-
-      {!isProfilePage && (
-        <>
-          <Text fontSize="sm" fontWeight={700}>
-            {creatorProfile?.username}{' '}
-            <Text as="span" fontWeight={400}>
-              {post.caption}
-            </Text>
-          </Text>
-          {post.comments.length > 0 && (
-            <Text
-              fontSize="sm"
-              color={'gray'}
-              cursor={'pointer'}
-              onClick={onOpen}
-            >
-              View all {post.comments.length} comments
-            </Text>
-          )}
-          {/* COMMENTS MODAL ONLY IN THE HOME PAGE */}
-          {isOpen ? (
-            <CommentsModal isOpen={isOpen} onClose={onClose} post={post} />
-          ) : null}
-        </>
-      )}
-
-      {authUser && (
-        <Flex
-          alignItems={'center'}
-          gap={2}
-          justifyContent={'space-between'}
-          w={'full'}
-        >
-          <InputGroup>
-            <Input
-              variant={'flushed'}
-              placeholder={'Add a comment...'}
-              fontSize={14}
-              onChange={(e) => setComment(e.target.value)}
-              value={comment}
-              ref={commentRef}
-            />
-            <InputRightElement>
+    <Modal isOpen={isOpen} onClose={onClose} motionPreset="slideInLeft">
+      <ModalOverlay />
+      <ModalContent bg={'black'} border={'1px solid gray'} maxW={'400px'}>
+        <ModalHeader>Comments</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody pb={6}>
+          <Flex
+            mb={4}
+            gap={4}
+            flexDir={'column'}
+            maxH={'250px'}
+            overflowY={'auto'}
+            ref={commentsContainerRef}
+          >
+            {post.comments.map((comment, idx) => (
+              <Comment key={idx} comment={comment} />
+            ))}
+          </Flex>
+          <form onSubmit={handleSubmitComment} style={{ marginTop: '2rem' }}>
+            <Input placeholder="Comment" size={'sm'} ref={commentRef} />
+            <Flex w={'full'} justifyContent={'flex-end'}>
               <Button
-                fontSize={14}
-                color={'blue.500'}
-                fontWeight={600}
-                cursor={'pointer'}
-                _hover={{ color: 'white' }}
-                bg={'transparent'}
-                onClick={handleSubmitComment}
+                type="submit"
+                ml={'auto'}
+                size={'sm'}
+                my={4}
                 isLoading={isCommenting}
               >
                 Post
               </Button>
-            </InputRightElement>
-          </InputGroup>
-        </Flex>
-      )}
-    </Box>
+            </Flex>
+          </form>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
   );
 };
 
-export default PostFooter;
+export default CommentsModal;

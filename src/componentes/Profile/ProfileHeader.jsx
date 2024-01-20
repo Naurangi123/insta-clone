@@ -67,10 +67,10 @@ const ProfileHeader = () => {
                 color={'white'}
                 _hover={{ bg: 'blue.600' }}
                 size={{ base: 'xs', md: 'sm' }}
-                // onClick={handleFollowUser}
-                // isLoading={isUpdating}
+                onClick={handleFollowUser}
+                isLoading={isUpdating}
               >
-                Follow{/* {isFollowing ? 'Unfollow' : 'Follow'} */}
+                Follow{isFollowing ? 'Unfollow' : 'Follow'}
               </Button>
             </Flex>
           )}

@@ -1,22 +1,18 @@
 import {
+  Box,
   Container,
   Flex,
-  Box,
   Skeleton,
   SkeletonCircle,
+  Text,
   VStack,
 } from '@chakra-ui/react';
 import FeedPost from './FeedPost';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import useGetFeedPosts from '../../hooks/useGetFeedPosts';
 
-const Feedposts = () => {
-  const [isLoading, setIsloading] = useState(true);
-  useEffect(() => {
-    setTimeout(() => {
-      setIsloading(false);
-    }, 2000);
-  }, []);
+const FeedPosts = () => {
+  const { isLoading, posts } = useGetFeedPosts();
+
   return (
     <Container maxW={'container.sm'} py={10} px={2}>
       {isLoading &&
@@ -34,20 +30,20 @@ const Feedposts = () => {
             </Skeleton>
           </VStack>
         ))}
-      {!isLoading && (
+
+      {!isLoading &&
+        posts.length > 0 &&
+        posts.map((post) => <FeedPost key={post.id} post={post} />)}
+      {!isLoading && posts.length === 0 && (
         <>
-          <FeedPost
-            img="/img1.png "
-            username="naurangi lal"
-            avatar="/img1.png"
-          />
-          <FeedPost img="/img2.png " username="Rajesh" avatar="/img2.png" />
-          <FeedPost img="/img3.png " username="AnyOne" avatar="/img3.png" />
-          <FeedPost img="/img4.png " username="Rahul" avatar="/img4.png" />
+          <Text fontSize={'md'} color={'red.400'}>
+            Dayuum. Looks like you don&apos;t have any friends.
+          </Text>
+          <Text color={'red.400'}>Stop coding and go make some!!</Text>
         </>
       )}
     </Container>
   );
 };
 
-export default Feedposts;
+export default FeedPosts;
