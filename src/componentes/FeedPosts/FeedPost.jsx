@@ -2,18 +2,16 @@ import { Box, Image } from '@chakra-ui/react';
 import PostFooter from './PostFooter';
 import PostHeader from './PostHeader';
 import useGetUserProfileById from '../../hooks/useGetUserProfileById';
+import FeedPosts from './Feedposts';
 
 const FeedPost = ({ post }) => {
-  // const { userProfile } = useGetUserProfileById(post.createdBy);
-  const { userProfile } = useGetUserProfileById(post.createdBy || '');
-  if (!post.createdBy) {
-    console.error(`Missing createdBy field in post with ID: ${post.id}`);
-    return null; // Skip rendering for this post
-  }
+  const { userProfile } = useGetUserProfileById(post.createdBy);
+
   return (
     <>
       <PostHeader post={post} creatorProfile={userProfile} />
       <Box my={2} borderRadius={4} overflow={'hidden'}>
+        <FeedPosts />
         <Image src={post.imageURL} alt={'FEED POST IMG'} />
       </Box>
       <PostFooter post={post} creatorProfile={userProfile} />

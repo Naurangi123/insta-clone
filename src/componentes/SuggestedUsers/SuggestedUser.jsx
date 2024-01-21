@@ -9,6 +9,13 @@ const SuggestedUser = ({ user, setUser }) => {
 
   const onFollowUser = async () => {
     await handleFollowUser();
+    //   setUser({
+    //     ...user,
+    //     followers: isFollowing
+    //       ? user.followers.filter((follower) => follower.uid !== authUser.uid)
+    //       : [...user.followers, authUser],
+    //   });
+    // };
     setUser({
       ...user,
       followers: isFollowing
@@ -16,7 +23,6 @@ const SuggestedUser = ({ user, setUser }) => {
         : [...user.followers, authUser],
     });
   };
-
   return (
     <Flex justifyContent={'space-between'} alignItems={'center'} w={'full'}>
       <Flex alignItems={'center'} gap={2}>
