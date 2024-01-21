@@ -13,7 +13,7 @@ const SuggestedHeader = () => {
     <Flex justifyContent={'space-between'} alignItems={'center'} w={'full'}>
       <Flex alignItems={'center'} gap={2}>
         <Link to={`${authUser.username}`}>
-          <Avatar size={'lg'} src={authUser.profilrURL} />
+          <Avatar size={'lg'} src={authUser.profilePicURL} />
         </Link>
         <Link to={`${authUser.username}`}>
           <Text fontSize={12} fontWeight={'bold'}>
