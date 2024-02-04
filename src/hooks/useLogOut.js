@@ -11,7 +11,7 @@ const useLogout = () => {
   const handleLogout = async () => {
     try {
       await signOut();
-      // localStorage.removeItem('user-info'); // Check if this line is redundant
+      localStorage.removeItem('user-info');
       logoutUser();
     } catch (error) {
       showToast('Error', error.message, 'error');
